@@ -1,0 +1,1 @@
+create table Users (name varchar(20), id int);
