@@ -11,12 +11,17 @@ public class DBConnection {
     
     public static Connection getConnection() {
     	Connection conn = null;
-    		
+    	
     	try {
     		Class.forName("org.apache.derby.jdbc.EmbeddedDriver");
     		conn =  DriverManager.getConnection(URL, USER, PASSWORD);
+    		if (conn != null) {
+    			System.out.println("Connection Started");    			
+    		} else {
+    			System.out.println("Connection is not started yet");
+    		}
     	} catch(ClassNotFoundException | SQLException e) {
-    		e.printStackTrace();
+    		 System.out.println("Error while connecting to Derby: " + e.getMessage());
     	}
     	
     	return conn;

@@ -1,0 +1,14 @@
+create table car (
+	id varchar(70) primary key,
+	regNumber varchar(70),
+	nameAndModel varchar(70),
+	transType varchar(70),
+	yearOfManufacture int,
+	rentalPrice double,
+	mileage double,
+	sittingCapacity int,
+	photoURL varchar(100)
+
+);
+
+select * from car;
