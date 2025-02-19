@@ -18,22 +18,20 @@ public class CarDAO {
 	public static int addCar(Car car) {
 
 		String query = "insert into car values(?,?,?,?,?,?,?,?,?)";
-		
-		String imageDir = GetDirectory.getImageDir();
+
 		try (Connection conn = DBConnection.getConnection()) {
 			System.out.println(conn);
-			
+
 			PreparedStatement stmt = conn.prepareStatement(query);
 			stmt.setString(1, car.getId());
 			stmt.setString(2, car.getRegNumber());
 			stmt.setString(3, car.getNameAndModel());
 			stmt.setString(4, car.getTransType());
 			stmt.setInt(5, car.getYearofManufacture());
-			stmt.setDouble(6,  car.getRentalPrice());
+			stmt.setDouble(6, car.getRentalPrice());
 			stmt.setDouble(7, car.getMileage());
 			stmt.setInt(8, car.getSittingCapacity());
 			stmt.setString(9, car.getPhotoURL());
-			
 
 			if (stmt.executeUpdate() > 0) {
 				System.out.println("Car added successfully.");
@@ -41,7 +39,10 @@ public class CarDAO {
 				return 1;
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
+			if (e.getErrorCode() == 30000) {
+				System.out.println("Car with this registration exists.");
+			}
+//			e.printStackTrace();
 		}
 
 		return 0;
@@ -75,16 +76,61 @@ public class CarDAO {
 	// anyone can fetch the cars details here also.
 	public static Car fetchSingleCar(String carId) {
 		// only fetch the single car by its ID
-		
-		
+		String imageDir = GetDirectory.getImageDir();
+		String query = "select * from car where id=?";
+		Car car = null;
+		try (Connection conn = DBConnection.getConnection()) {
+			System.out.println(conn);
 
-		return null;
+			PreparedStatement stmt = conn.prepareStatement(query);
+			stmt.setString(1, carId);
+
+			ResultSet resultSet = stmt.executeQuery();
+
+			while (resultSet.next()) {
+				car = new Car(resultSet.getString(1), resultSet.getString(2), resultSet.getString(3),
+						resultSet.getString(4), resultSet.getInt(5), resultSet.getDouble(6), resultSet.getDouble(7),
+						resultSet.getInt(8), imageDir + resultSet.getString(9));
+			}
+			conn.close();
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return car;
 	}
 
 	// only admin an update a car details.
-	public static Car updateCar(Car updatedCar) {
-		// update a car by getting new car details.
-		return null;
+	public static int updateCar(Car updatedCar) {
+		String query = "update car set regNumber=?, nameAndModel=?, transType=?, yearofManufacture=?, rentalPrice=?, mileage=?, sittingCapacity=?, photoURL=? where id=?";
+		
+		try (Connection conn = DBConnection.getConnection()) {
+			System.out.println(conn);
+
+			PreparedStatement stmt = conn.prepareStatement(query);
+			stmt.setString(1, updatedCar.getRegNumber());
+			stmt.setString(2, updatedCar.getNameAndModel());
+			stmt.setString(3, updatedCar.getTransType());
+			stmt.setInt(4, updatedCar.getYearofManufacture());
+			stmt.setDouble(5, updatedCar.getRentalPrice());
+			stmt.setDouble(6, updatedCar.getMileage());
+			stmt.setInt(7, updatedCar.getSittingCapacity());
+			stmt.setString(8, updatedCar.getPhotoURL());
+			
+			stmt.setString(9, updatedCar.getId());
+
+			if (stmt.executeUpdate() > 0) {
+				System.out.println("Car Updated successfully.");
+				conn.close();
+				return 1;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return 0;
+		
 	}
 
 	// only admin can

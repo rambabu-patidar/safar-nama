@@ -24,6 +24,11 @@
         <br>
         <img src="<%=car.getPhotoURL()%>" alt="This is a car image." width="50px"/>
         <br><br>
+        <form action="car" method="post">
+        	<input type="hidden" name="carId" value="<%=car.getId()%>"/>
+        	<button type="submit" >View Car Details</button>
+        
+        </form>
         <hr>
     <% } %>
 <% 
