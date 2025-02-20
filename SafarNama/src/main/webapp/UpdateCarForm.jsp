@@ -40,7 +40,7 @@
 	<br/>
 	<label for="photoURL">Image URL</label>
 	<input type="file" name="photoURL" accept="image/*" value="Upload Car Image" />
-	<input type="hidden" name="photoURLWhenImageNotUploaded" value="<%=car.getPhotoURL()%>"/>
+	<input type="hidden" name="previousPhotoURL" value="<%=car.getPhotoURL()%>"/>
 	<br/>
 	<input type="submit" value="Submit"/>
 	<br/>

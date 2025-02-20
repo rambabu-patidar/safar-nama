@@ -53,7 +53,6 @@ public class CarDAO {
 	// we need to only fetch N number of cars so that pagination can be provided.
 	// anyone can fetch car details.
 	public static ArrayList<Car> fetchCars() {
-		String imageDir = GetDirectory.getImageDir();
 		String query = "select * from car";
 		ArrayList<Car> cars = new ArrayList<>();
 		try (Connection conn = DBConnection.getConnection()) {
@@ -64,7 +63,7 @@ public class CarDAO {
 			while (resultSet.next()) {
 				cars.add(new Car(resultSet.getString(1), resultSet.getString(2), resultSet.getString(3),
 						resultSet.getString(4), resultSet.getInt(5), resultSet.getDouble(6), resultSet.getDouble(7),
-						resultSet.getInt(8), imageDir + resultSet.getString(9)));
+						resultSet.getInt(8), resultSet.getString(9)));
 			}
 			conn.close();
 		} catch (Exception e) {
@@ -76,7 +75,6 @@ public class CarDAO {
 	// anyone can fetch the cars details here also.
 	public static Car fetchSingleCar(String carId) {
 		// only fetch the single car by its ID
-		String imageDir = GetDirectory.getImageDir();
 		String query = "select * from car where id=?";
 		Car car = null;
 		try (Connection conn = DBConnection.getConnection()) {
@@ -90,7 +88,7 @@ public class CarDAO {
 			while (resultSet.next()) {
 				car = new Car(resultSet.getString(1), resultSet.getString(2), resultSet.getString(3),
 						resultSet.getString(4), resultSet.getInt(5), resultSet.getDouble(6), resultSet.getDouble(7),
-						resultSet.getInt(8), imageDir + resultSet.getString(9));
+						resultSet.getInt(8), resultSet.getString(9));
 			}
 			conn.close();
 
@@ -134,10 +132,27 @@ public class CarDAO {
 	}
 
 	// only admin can
-	public static Car deleteCar(String carId) {
-		// delete the car from the database.
-		// return either boolean or Car itself.
-		return null;
+	public static int deleteCar(String carId) {
+String query = "delete from car where id=?";
+		
+		try (Connection conn = DBConnection.getConnection()) {
+			System.out.println(conn);
+
+			PreparedStatement stmt = conn.prepareStatement(query);
+			stmt.setString(1, carId);
+			
+
+			if (stmt.executeUpdate() > 0) {
+				System.out.println("Car Deleted successfully.");
+				conn.close();
+				return 1;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return 0;
+		
 	}
 
 }
