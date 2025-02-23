@@ -71,6 +71,52 @@ public class CarDAO {
 		}
 		return cars;
 	}
+	
+	
+	public static ArrayList<Car> fetchCars(int page, int ITEMS_PER_PAGE) {
+		ArrayList<Car> cars = new ArrayList<>();
+		int offset = (page - 1) * ITEMS_PER_PAGE;
+		String query = "select * from car offset ? rows fetch first ? rows only";
+		
+		try (Connection conn = DBConnection.getConnection()) {
+			PreparedStatement stmt = conn.prepareStatement(query);
+
+			
+			// Get paginated products
+			stmt.setInt(1, offset);
+			stmt.setInt(2, ITEMS_PER_PAGE);
+            ResultSet resultSet = stmt.executeQuery();
+            
+			while (resultSet.next()) {
+				cars.add(new Car(resultSet.getString(1), resultSet.getString(2), resultSet.getString(3),
+						resultSet.getString(4), resultSet.getInt(5), resultSet.getDouble(6), resultSet.getDouble(7),
+						resultSet.getInt(8), resultSet.getString(9)));
+			}
+			conn.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return cars;
+	}
+	
+	public static int getCarsCount() {
+		String countQuery = "SELECT COUNT(*) FROM car";;
+		int count = 0;
+		try (Connection conn = DBConnection.getConnection()) {
+			Statement stmt = conn.createStatement();
+			
+			ResultSet resultSet = stmt.executeQuery(countQuery);
+			
+			while (resultSet.next()) {
+				count = resultSet.getInt(1);
+			}
+			conn.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return count;
+	}
 
 	// anyone can fetch the cars details here also.
 	public static Car fetchSingleCar(String carId) {

@@ -3,6 +3,7 @@ package com.safar.servlet;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.LocalDate;
 import java.util.ArrayList;
 
 import com.safar.dao.CarDAO;
@@ -26,14 +27,32 @@ import jakarta.servlet.http.Part;
 		)
 public class CarServlet extends HttpServlet {
 
-
+	public static final int ITEMS_PER_PAGE = 5;
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		
+		int page = 1;
+		
+		if (req.getParameter("page") != null) {
+            page = Integer.parseInt(req.getParameter("page"));
+        }
+		
+		int totalCars  = CarDAO.getCarsCount();
+		
+		int lastPage = (int) Math.ceil((double) totalCars / ITEMS_PER_PAGE);
+		
 		// find all the cars
-		ArrayList<Car> cars = CarDAO.fetchCars();
+		ArrayList<Car> cars = CarDAO.fetchCars(page, ITEMS_PER_PAGE);
 		System.out.println(cars.size());
+		
 		req.setAttribute("cars", cars);
+		req.setAttribute("currentPage", page);
+        req.setAttribute("hasNextPage", ITEMS_PER_PAGE * page < totalCars);
+        req.setAttribute("hasPrevPage", page > 1);
+        req.setAttribute("nextPage", page + 1);
+        req.setAttribute("previousPage", page - 1);
+        req.setAttribute("lastPage", lastPage);
+		
 		req.getRequestDispatcher("ShowCar.jsp").forward(req,  resp);
 	}
 	
@@ -47,8 +66,7 @@ public class CarServlet extends HttpServlet {
 		int yearofManufacture = Integer.parseInt(req.getParameter("yearOfManufacture"));
 		double rentalPrice = Double.parseDouble(req.getParameter("rentalPrice"));
 		double mileage = Double.parseDouble(req.getParameter("mileage"));
-		int sittingCapacity = Integer.parseInt(req.getParameter("sittingCapacity"));
-		
+		int sittingCapacity = Integer.parseInt(req.getParameter("sittingCapacity"));	
 		//Handle image sent by user
 		Part filePart = req.getPart("photoURL");
 		String fileName = GenerateRandomId.generateRandomString().substring(0, 7) + ".jpg";

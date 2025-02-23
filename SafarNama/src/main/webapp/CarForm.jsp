@@ -34,6 +34,7 @@
 	<label for="sittingCapacity">Sitting Capacity</label>
 	<input type="number" name="sittingCapacity" value="1" required/>
 	<br/>
+	
 	<label for="photoURL">Image URL</label>
 	<input type="file" name="photoURL" accept="image/*" value="Upload Car Image" required/>
 	<br/>
